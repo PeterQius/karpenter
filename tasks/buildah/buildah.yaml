@@ -1,0 +1,33 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: buildah
+spec:
+  params:
+  - name: image
+    description: Image    
+  workspaces:
+  - name: source
+  steps:
+  - name: build
+    image: quay.io/karpenter/buildah
+    script: |
+      ls -latr $(workspaces.source.path)
+      buildah bud --no-cache -f $(workspaces.source.path)/Dockerfile -t $(params.image) $(workspaces.source.path)
+    volumeMounts:
+    - name: containers
+      mountPath: /var/lib/containers
+    securityContext:
+      privileged: true
+  - name: push
+    image: quay.io/karpenter/buildah
+    script: |
+      buildah push $(params.image)
+    volumeMounts:
+    - name: containers
+      mountPath: /var/lib/containers
+    securityContext:
+      privileged: true
+  volumes:
+  - name: containers
+    emptyDir: {}

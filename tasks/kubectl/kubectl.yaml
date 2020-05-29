@@ -1,0 +1,15 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: kubectl
+spec:
+  workspaces:
+  - name: source
+  params:
+  - name: command
+    description: Command
+  steps:
+  - name: kubectl
+    image: quay.io/karpenter/kubectl
+    script: |      
+      kubectl $(params.command)

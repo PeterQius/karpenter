@@ -1,0 +1,18 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: git
+spec:
+  workspaces:
+  - name: source
+  params:
+  - name: repository
+    description: Repository
+  - name: revision
+    description: Revision
+  steps:
+  - name: git
+    image: quay.io/karpenter/git
+    script: |      
+      rm -rf $(workspaces.source.path)/* $(workspaces.source.path)/.[!.]*
+      git clone --single-branch --branch $(params.revision) $(params.repository) $(workspaces.source.path)/
