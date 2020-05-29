@@ -18,7 +18,7 @@ This repository is a work in progress.
     kubectl -f apply ./tasks/buildah.yaml
     kubectl -f apply ./tasks/kubectl.yaml
 
-    kubectl -f apply pipeline.yaml
+    kubectl -f apply ./pipeline.yaml
 
     tkn pipelinerun logs -f hello-pipeline-run
 
