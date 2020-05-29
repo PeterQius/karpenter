@@ -1,0 +1,181 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: git
+spec:
+  workspaces:
+  - name: source
+  params:
+  - name: repository
+    description: Repository
+  - name: revision
+    description: Revision
+  steps:
+  - name: git
+    image: quay.io/karpenter/git
+    script: |      
+      rm -rf $(workspaces.source.path)/* $(workspaces.source.path)/.[!.]*
+      git clone --single-branch --branch $(params.revision) $(params.repository) $(workspaces.source.path)/
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: mvn
+spec:
+  workspaces:
+  - name: source
+  params:
+  - name: command
+    description: Command to execute
+  steps:
+  - name: mvn
+    image: quay.io/karpenter/mvn
+    script: |      
+      mvn $(params.command) -f $(workspaces.source.path)
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: buildah
+spec:
+  params:
+  - name: image
+    description: Image    
+  workspaces:
+  - name: source
+  steps:
+  - name: build
+    image: quay.io/karpenter/buildah
+    script: |
+      ls -latr $(workspaces.source.path)
+      buildah bud --no-cache -f $(workspaces.source.path)/Dockerfile -t $(params.image) $(workspaces.source.path)
+    volumeMounts:
+    - name: containers
+      mountPath: /var/lib/containers
+    securityContext:
+      privileged: true
+  - name: push
+    image: quay.io/karpenter/buildah
+    script: |
+      buildah push $(params.image)
+    volumeMounts:
+    - name: containers
+      mountPath: /var/lib/containers
+    securityContext:
+      privileged: true
+  volumes:
+  - name: containers
+    emptyDir: {}
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: kubectl
+spec:
+  workspaces:
+  - name: source
+  params:
+  - name: command
+    description: Command
+  steps:
+  - name: kubectl
+    image: quay.io/karpenter/kubectl
+    script: |      
+      kubectl $(params.command)
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: hello-pipeline
+spec:
+  workspaces:
+  - name: source
+  tasks:
+  - name: clone
+    taskRef:
+      name: git
+    workspaces:
+    - name: source
+      workspace: source
+    params:
+    - name: repository
+      value: https://github.com/leandroberetta/hello
+    - name: revision
+      value: master
+  - name: package
+    taskRef:
+      name: mvn
+    runAfter:
+    - clone
+    workspaces:
+    - name: source
+      workspace: source
+    params:
+    - name: command
+      value: package
+  - name: build
+    taskRef:
+      name: buildah
+    runAfter:
+    - package
+    workspaces:
+    - name: source
+      workspace: source
+    params:
+    - name: image
+      value: quay.io/leandroberetta/hello
+  - name: deploy
+    taskRef:
+      name: kubectl
+    runAfter:
+    - build
+    workspaces:
+    - name: source
+      workspace: source
+    params:
+    - name: command
+      value: apply -f $(workspaces.source.path)/hello.yaml
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: source
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: build-bot
+secrets:
+  - name: quay-credentials
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: build-bot-edit
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: edit
+subjects:
+- kind: ServiceAccount
+  name: build-bot
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: hello-pipeline-run
+spec:
+  serviceAccountName: build-bot
+  pipelineRef:
+    name: hello-pipeline
+  workspaces:
+  - name: source
+    persistentvolumeclaim:
+      claimName: source
