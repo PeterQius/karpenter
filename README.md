@@ -1,10 +1,12 @@
 # Karpenter
 
-Catalog of Tekton steps for CI/CD pipelines.
+Tekton tasks to use in CI/CD pipelines.
 
-This repository is a work in progress.
+**Note**: This repository is a work in progress.
 
-## Steps
+## Tasks
+
+The following tasks are available to use:
 
 * git
 * mvn
@@ -13,13 +15,31 @@ This repository is a work in progress.
 
 ## Pipeline
 
-    kubectl -f apply ./tasks/git.yaml
-    kubectl -f apply ./tasks/mvn.yaml
-    kubectl -f apply ./tasks/buildah.yaml
-    kubectl -f apply ./tasks/kubectl.yaml
+### Run on Minikube
 
-    kubectl -f apply ./pipeline.yaml
+Start a Minikube instance:
 
-    tkn pipelinerun logs -f hello-pipeline-run
+    minikube start --memory=8g
 
+Install Tekton pipelines and Tekton dashboard
+
+    kubectl apply --filename https://storage.googleapis.com/tekton-releases/pipeline/latest/release.yaml
+    kubectl apply --filename https://github.com/tektoncd/dashboard/releases/latest/download/tekton-dashboard-release.yaml
+
+Create a namespace to deploy the application:
+
+    kubectl create namespace hello
+
+Create the tasks needed by the pipeline:
+
+    kubectl apply -f ./tasks/git/git.yaml -n hello
+    kubectl apply -f ./tasks/mvn/mvn.yaml -n hello
+    kubectl apply -f ./tasks/buildah/buildah.yaml -n hello
+    kubectl apply -f ./tasks/kubectl/kubectl.yaml -n hello
+
+    kubectl apply -f ./pipeline.yaml -n hello
+
+### Pipeline Overview
+
+![pipelines](./pipeline.png)
 
