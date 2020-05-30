@@ -13,7 +13,9 @@ The following tasks are available to use:
 * buildah
 * kubectl
 
-## Pipeline
+## Demo
+
+The following demo consists on a sample pipeline to demonstrate the use of Karpenter tasks and Tekton pipelines.
 
 ### Run on Minikube
 
@@ -37,9 +39,11 @@ Create the tasks needed by the pipeline:
     kubectl apply -f ./tasks/buildah/buildah.yaml -n hello
     kubectl apply -f ./tasks/kubectl/kubectl.yaml -n hello
 
-    kubectl apply -f ./pipeline.yaml -n hello
+Finally create the pipeline resources:
+
+    kubectl apply -f ./demo/pipeline.yaml -n hello
 
 ### Pipeline Overview
 
-![pipelines](./pipeline.png)
+![pipelines](./demo/pipeline.png)
 
