@@ -11,6 +11,7 @@ The following tasks are available to use:
 * git
 * mvn
 * buildah
+* s2i
 * kubectl
 
 ## Demo
@@ -22,6 +23,10 @@ The following demo consists on a sample pipeline to demonstrate the use of Karpe
 Start a Minikube instance:
 
     minikube start --memory=8g
+
+Install a registry:
+
+    minikube addons enable registry
 
 Install Tekton pipelines and Tekton dashboard
 

@@ -1,16 +1,17 @@
----
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: mvn
 spec:
   workspaces:
-  - name: source
+    - name: source
   params:
-  - name: command
-    description: Command to execute
+    - name: COMMAND
+    - name: CONTEXT_PATH
+      default: .
   steps:
-  - name: mvn
-    image: quay.io/karpenter/mvn
-    script: |      
-      mvn $(params.command) -f $(workspaces.source.path)
+    - name: mvn
+      image: quay.io/karpenter/mvn
+      workingdir: $(workspaces.source.path)
+      script: |
+        mvn $(params.COMMAND) -f $(params.CONTEXT_PATH)

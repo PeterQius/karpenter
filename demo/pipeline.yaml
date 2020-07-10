@@ -14,9 +14,9 @@ spec:
     - name: source
       workspace: source
     params:
-    - name: repository
-      value: https://github.com/leandroberetta/hello
-    - name: revision
+    - name: REPOSITORY
+      value: https://github.com/leandroberetta/karpenter
+    - name: REVISION
       value: master
   - name: package
     taskRef:
@@ -27,8 +27,10 @@ spec:
     - name: source
       workspace: source
     params:
-    - name: command
+    - name: COMMAND
       value: package
+    - name: CONTEXT_PATH
+      value: demo/application
   - name: build
     taskRef:
       name: buildah
@@ -38,8 +40,12 @@ spec:
     - name: source
       workspace: source
     params:
-    - name: image
-      value: quay.io/leandroberetta/hello
+    - name: IMAGE
+      value: registry.kube-system.svc.cluster.local:80/hello/hello:latest
+    - name: TLS_VERIFY
+      value: "false"
+    - name: CONTEXT_PATH
+      value: demo/application
   - name: deploy
     taskRef:
       name: kubectl
@@ -49,8 +55,8 @@ spec:
     - name: source
       workspace: source
     params:
-    - name: command
-      value: apply -f $(workspaces.source.path)/hello.yaml
+    - name: COMMAND
+      value: apply -k $(workspaces.source.path)/demo/application/k8s/overlays/dev
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

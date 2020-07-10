@@ -1,0 +1,36 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+    name: s2i
+spec:
+    params:
+        - name: BASE_IMAGE
+        - name: IMAGE
+    workspaces:
+        - name: source
+    steps:
+        - name: generate
+          image: quay.io/karpenter/s2i
+          script: |
+            s2i build $(workspaces.source.path) $(params.BASE_IMAGE) --as-dockerfile $(workspaces.source.path)/Dockerfile.gen
+        - name: build
+          image: quay.io/karpenter/buildah
+          script: |
+              buildah bud --no-cache -f $(workspaces.source.path)/Dockerfile.gen -t $(params.IMAGE) $(workspaces.source.path)
+          volumeMounts:
+              - name: containers
+                mountPath: /var/lib/containers
+          securityContext:
+              privileged: true
+        - name: push
+          image: quay.io/karpenter/buildah
+          script: |
+              buildah push $(params.IMAGE)
+          volumeMounts:
+              - name: containers
+                mountPath: /var/lib/containers
+          securityContext:
+              privileged: true
+    volumes:
+        - name: containers
+          emptyDir: {}
