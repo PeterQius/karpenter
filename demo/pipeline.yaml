@@ -30,7 +30,7 @@ spec:
     - name: COMMAND
       value: package
     - name: CONTEXT_PATH
-      value: demo/application
+      value: demo/app
   - name: build
     taskRef:
       name: buildah
@@ -45,7 +45,7 @@ spec:
     - name: TLS_VERIFY
       value: "false"
     - name: CONTEXT_PATH
-      value: demo/application
+      value: demo/app
   - name: deploy
     taskRef:
       name: kubectl
@@ -73,8 +73,6 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: build-bot
-secrets:
-  - name: quay-credentials
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
