@@ -1,4 +1,3 @@
----
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
@@ -41,7 +40,7 @@ spec:
       workspace: source
     params:
     - name: IMAGE
-      value: registry.kube-system.svc.cluster.local:80/hello/hello:latest
+      value: localhost:5000/hello/hello:latest
     - name: TLS_VERIFY
       value: "false"
     - name: CONTEXT_PATH
@@ -56,7 +55,7 @@ spec:
       workspace: source
     params:
     - name: COMMAND
-      value: apply -k $(workspaces.source.path)/demo/application/k8s/overlays/dev
+      value: apply -k $(workspaces.source.path)/demo/app/k8s/overlays/dev
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
