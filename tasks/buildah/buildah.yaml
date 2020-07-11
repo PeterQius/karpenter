@@ -6,6 +6,7 @@ spec:
   params:
     - name: IMAGE
     - name: TLS_VERIFY
+      default: "true"
     - name: CONTEXT_PATH
       default: .
   workspaces:
@@ -13,8 +14,8 @@ spec:
   steps:
     - name: build
       image: quay.io/karpenter/buildah
-      workingdir: $(workspaces.source.path)
-      script: |        
+      workingDir: $(workspaces.source.path)
+      script: |                
         buildah bud --no-cache --tls-verify=$(params.TLS_VERIFY) -f $(params.CONTEXT_PATH)/Dockerfile -t $(params.IMAGE) $(params.CONTEXT_PATH)
       volumeMounts:
         - name: containers
@@ -23,7 +24,7 @@ spec:
         privileged: true
     - name: push
       image: quay.io/karpenter/buildah
-      workingdir: $(workspaces.source.path)
+      workingDir: $(workspaces.source.path)
       script: |
         buildah push --tls-verify=$(params.TLS_VERIFY) $(params.IMAGE)
       volumeMounts:

@@ -48,6 +48,19 @@ Finally create the pipeline resources:
 
     kubectl apply -f ./demo/pipeline.yaml -n hello
 
+    echo "apiVersion: tekton.dev/v1beta1
+    kind: PipelineRun
+      metadata:
+      name: hello-pipeline-run
+    spec:
+      serviceAccountName: build-bot
+      pipelineRef:
+        name: hello-pipeline
+      workspaces:
+      - name: source
+        persistentvolumeclaim:
+          claimName: source" | kubectl replace -f - -n hello
+
 ### Pipeline Overview
 
 ![pipelines](./demo/pipeline.png)

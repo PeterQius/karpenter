@@ -12,6 +12,6 @@ spec:
   steps:
     - name: mvn
       image: quay.io/karpenter/mvn
-      workingdir: $(workspaces.source.path)
-      script: |
+      workingDir: $(workspaces.source.path)
+      script: |        
         mvn $(params.COMMAND) -f $(params.CONTEXT_PATH)

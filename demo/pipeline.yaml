@@ -40,9 +40,7 @@ spec:
       workspace: source
     params:
     - name: IMAGE
-      value: localhost:5000/hello/hello:latest
-    - name: TLS_VERIFY
-      value: "false"
+      value: example.org/hello/hello:latest
     - name: CONTEXT_PATH
       value: demo/app
   - name: deploy

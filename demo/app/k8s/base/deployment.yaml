@@ -17,7 +17,7 @@ spec:
         app: hello
     spec:
       containers:
-      - image: localhost:5000/hello/hello:latest
+      - image: example.org/hello/hello:latest
         imagePullPolicy: Always
         name: hello
         env:
