@@ -40,7 +40,7 @@ spec:
       workspace: source
     params:
     - name: IMAGE
-      value: example.org:80/hello/hello:latest
+      value: example.org/hello/hello:latest
     - name: CONTEXT_PATH
       value: demo/app
     - name: TLS_VERIFY

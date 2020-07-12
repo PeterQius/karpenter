@@ -17,7 +17,7 @@ spec:
         app: hello
     spec:
       containers:
-      - image: example.org:80/hello/hello:latest
+      - image: example.org/hello/hello:latest
         imagePullPolicy: Always
         name: hello
         env:

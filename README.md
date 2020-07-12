@@ -25,7 +25,7 @@ Start a Minikube instance:
     minikube start \
       --memory=8g \
       --driver=hyperkit \
-      --insecure-registry "example.org:80"
+      --insecure-registry "example.org"
 
 Install the registry and registry-aliases addons:
 
