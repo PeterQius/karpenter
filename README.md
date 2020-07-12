@@ -6,15 +6,19 @@ Tekton tasks to use in CI/CD pipelines.
 
 The following tasks are available to use:
 
-* git
-* mvn
-* buildah
-* s2i
-* kubectl
+* [git](tasks/git/git.yaml)
+* [mvn](tasks/mvn/mvn.yaml)
+* [buildah](tasks/buildah/buildah.yaml)
+* [kubectl](tasks/kubectl/kubectl.yaml)
+* [s2i](tasks/s2i/s2i.yaml)
 
 ## Demo
 
 The following demo consists on a sample pipeline to demonstrate the use of Karpenter tasks and Tekton pipelines.
+
+### Pipeline Overview
+
+![pipelines](./demo/pipeline.png)
 
 ### Run on Minikube
 
@@ -57,9 +61,5 @@ Finally run the pipeline:
       workspaces:
       - name: source
         persistentvolumeclaim:
-          claimName: source" | kubectl replace -f - -n hello
-
-### Pipeline Overview
-
-![pipelines](./demo/pipeline.png)
+          claimName: source" | kubectl apply -f - -n hello
 
