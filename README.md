@@ -2,8 +2,6 @@
 
 Tekton tasks to use in CI/CD pipelines.
 
-**Note**: This repository is a work in progress.
-
 ## Tasks
 
 The following tasks are available to use:
@@ -22,10 +20,7 @@ The following demo consists on a sample pipeline to demonstrate the use of Karpe
 
 Start a Minikube instance:
 
-    minikube start \
-      --memory=8g \
-      --driver=hyperkit \
-      --insecure-registry "example.org"
+    minikube start --memory=8g --insecure-registry "example.org"
 
 Install the registry and registry-aliases addons:
 
@@ -45,9 +40,11 @@ Create the tasks needed by the pipeline:
 
     kubectl apply -R -f ./tasks -n hello
 
-Finally create the pipeline resources:
+Create the pipeline resources:
 
     kubectl apply -f ./demo/pipeline.yaml -n hello
+
+Finally run the pipeline:
 
     echo "apiVersion: tekton.dev/v1beta1
     kind: PipelineRun
