@@ -9,6 +9,8 @@ spec:
       default: "true"
     - name: CONTEXT_PATH
       default: .
+    - name: FORMAT
+      default: oci
   workspaces:
     - name: source
   steps:
@@ -16,7 +18,7 @@ spec:
       image: quay.io/karpenter/buildah
       workingDir: $(workspaces.source.path)
       script: |                
-        buildah bud --no-cache --tls-verify=$(params.TLS_VERIFY) -f $(params.CONTEXT_PATH)/Dockerfile -t $(params.IMAGE) $(params.CONTEXT_PATH)
+        buildah bud --no-cache --format=$(params.FORMAT) --tls-verify=$(params.TLS_VERIFY) -f $(params.CONTEXT_PATH)/Dockerfile -t $(params.IMAGE) $(params.CONTEXT_PATH)
       volumeMounts:
         - name: containers
           mountPath: /var/lib/containers
@@ -26,7 +28,7 @@ spec:
       image: quay.io/karpenter/buildah
       workingDir: $(workspaces.source.path)
       script: |
-        buildah push --tls-verify=$(params.TLS_VERIFY) $(params.IMAGE)
+        buildah push --tls-verify=$(params.TLS_VERIFY) $(params.IMAGE) docker://$(params.IMAGE)
       volumeMounts:
         - name: containers
           mountPath: /var/lib/containers

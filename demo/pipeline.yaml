@@ -40,9 +40,13 @@ spec:
       workspace: source
     params:
     - name: IMAGE
-      value: example.org/hello/hello:latest
+      value: example.org:80/hello/hello:latest
     - name: CONTEXT_PATH
       value: demo/app
+    - name: TLS_VERIFY
+      value: "false"
+    - name: FORMAT
+      value: docker
   - name: deploy
     taskRef:
       name: kubectl
@@ -82,16 +86,3 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: build-bot
----
-apiVersion: tekton.dev/v1beta1
-kind: PipelineRun
-metadata:
-  name: hello-pipeline-run
-spec:
-  serviceAccountName: build-bot
-  pipelineRef:
-    name: hello-pipeline
-  workspaces:
-  - name: source
-    persistentvolumeclaim:
-      claimName: source

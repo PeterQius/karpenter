@@ -22,16 +22,20 @@ The following demo consists on a sample pipeline to demonstrate the use of Karpe
 
 Start a Minikube instance:
 
-    minikube start --memory=8g
+    minikube start \
+      --memory=8g \
+      --driver=hyperkit \
+      --insecure-registry "example.org:80"
 
-Install a registry:
+Install the registry and registry-aliases addons:
 
     minikube addons enable registry
+    minikube addons enable registry-aliases
 
 Install Tekton pipelines and Tekton dashboard
 
-    kubectl apply --filename https://storage.googleapis.com/tekton-releases/pipeline/latest/release.yaml
-    kubectl apply --filename https://github.com/tektoncd/dashboard/releases/latest/download/tekton-dashboard-release.yaml
+    kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/latest/release.yaml
+    kubectl apply -f https://github.com/tektoncd/dashboard/releases/latest/download/tekton-dashboard-release.yaml
 
 Create a namespace to deploy the application:
 
@@ -39,10 +43,7 @@ Create a namespace to deploy the application:
 
 Create the tasks needed by the pipeline:
 
-    kubectl apply -f ./tasks/git/git.yaml -n hello
-    kubectl apply -f ./tasks/mvn/mvn.yaml -n hello
-    kubectl apply -f ./tasks/buildah/buildah.yaml -n hello
-    kubectl apply -f ./tasks/kubectl/kubectl.yaml -n hello
+    kubectl apply -R -f ./tasks -n hello
 
 Finally create the pipeline resources:
 
@@ -50,7 +51,7 @@ Finally create the pipeline resources:
 
     echo "apiVersion: tekton.dev/v1beta1
     kind: PipelineRun
-      metadata:
+    metadata:
       name: hello-pipeline-run
     spec:
       serviceAccountName: build-bot
