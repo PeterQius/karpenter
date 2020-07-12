@@ -18,15 +18,20 @@ spec:
     - name: generate
       image: quay.io/karpenter/s2i
       script: |
-        s2i build $(workspaces.source.path) $(params.BASE_IMAGE) --as-dockerfile $(workspaces.source.path)/Dockerfile.gen
+        s2i build $(workspaces.source.path) $(params.BASE_IMAGE) --as-dockerfile /dockerfile/Dockerfile
+      volumeMounts:
+        - name: dockerfile
+          mountPath: /dockerfile
     - name: build
       image: quay.io/karpenter/buildah
       workingDir: $(workspaces.source.path)
       script: |                
-        buildah bud --no-cache --format=$(params.FORMAT) --tls-verify=$(params.TLS_VERIFY) -f $(params.CONTEXT_PATH)/Dockerfile -t $(params.IMAGE) $(params.CONTEXT_PATH)
+        buildah bud --no-cache --format=$(params.FORMAT) --tls-verify=$(params.TLS_VERIFY) -f /dockerfile/Dockerfile -t $(params.IMAGE) $(params.CONTEXT_PATH)
       volumeMounts:
         - name: containers
           mountPath: /var/lib/containers
+        - name: dockerfile
+          mountPath: /dockerfile
       securityContext:
         privileged: true
     - name: push
@@ -41,4 +46,6 @@ spec:
         privileged: true
   volumes:
     - name: containers
+      emptyDir: {}
+    - name: dockerfile
       emptyDir: {}
