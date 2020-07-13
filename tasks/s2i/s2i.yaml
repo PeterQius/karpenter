@@ -5,6 +5,8 @@ metadata:
 spec:
   params:
     - name: BASE_IMAGE
+    - name: BASE_IMAGE_S2I_SCRIPTS
+      default: /usr/libexec/s2i
     - name: IMAGE
     - name: TLS_VERIFY
       default: "true"
@@ -18,20 +20,20 @@ spec:
     - name: generate
       image: quay.io/karpenter/s2i
       script: |
-        s2i build $(workspaces.source.path) $(params.BASE_IMAGE) --as-dockerfile /dockerfile/Dockerfile
+        s2i build $(workspaces.source.path)/$(params.CONTEXT_PATH) $(params.BASE_IMAGE) --image-scripts-url=image://$(params.BASE_IMAGE_S2I_SCRIPTS) --as-dockerfile /source-to-image/Dockerfile
       volumeMounts:
-        - name: dockerfile
-          mountPath: /dockerfile
+        - name: source-to-image
+          mountPath: /source-to-image
     - name: build
       image: quay.io/karpenter/buildah
-      workingDir: $(workspaces.source.path)
+      workingDir: /source-to-image
       script: |                
-        buildah bud --no-cache --format=$(params.FORMAT) --tls-verify=$(params.TLS_VERIFY) -f /dockerfile/Dockerfile -t $(params.IMAGE) $(params.CONTEXT_PATH)
+        buildah bud --no-cache --format=$(params.FORMAT) --tls-verify=$(params.TLS_VERIFY) -f Dockerfile -t $(params.IMAGE)
       volumeMounts:
         - name: containers
           mountPath: /var/lib/containers
-        - name: dockerfile
-          mountPath: /dockerfile
+        - name: source-to-image
+          mountPath: /source-to-image
       securityContext:
         privileged: true
     - name: push
@@ -47,5 +49,5 @@ spec:
   volumes:
     - name: containers
       emptyDir: {}
-    - name: dockerfile
+    - name: source-to-image
       emptyDir: {}
