@@ -1,0 +1,17 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: npm
+spec:
+  workspaces:
+    - name: source
+  params:
+    - name: COMMAND
+    - name: CONTEXT_PATH
+      default: .
+  steps:
+    - name: npm
+      image: quay.io/karpenter/npm
+      workingDir: $(workspaces.source.path)
+      script: |        
+        npm $(params.COMMAND) --prefix $(params.CONTEXT_PATH)

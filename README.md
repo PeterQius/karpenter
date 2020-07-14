@@ -8,6 +8,7 @@ The following tasks are available to use:
 
 * [git](tasks/git/git.yaml)
 * [mvn](tasks/mvn/mvn.yaml)
+* [npm](tasks/mvn/npm.yaml)
 * [buildah](tasks/buildah/buildah.yaml)
 * [kubectl](tasks/kubectl/kubectl.yaml)
 * [s2i](tasks/s2i/s2i.yaml)

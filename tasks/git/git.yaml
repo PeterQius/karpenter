@@ -12,6 +12,5 @@ spec:
     - name: git
       image: quay.io/karpenter/git
       script: |
-        ls -latr $(workspaces.source.path)
         rm -rf $(workspaces.source.path)/* $(workspaces.source.path)/.[!.]*
         git clone --single-branch --branch $(params.REVISION) $(params.REPOSITORY) $(workspaces.source.path)
