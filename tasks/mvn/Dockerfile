@@ -1,5 +1,5 @@
 FROM registry.fedoraproject.org/fedora-minimal
 
-RUN microdnf install curl ca-certificates maven
+RUN microdnf install npm
 
 
