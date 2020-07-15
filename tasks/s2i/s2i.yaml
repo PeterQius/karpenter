@@ -14,13 +14,15 @@ spec:
       default: .
     - name: FORMAT
       default: oci
+    - name: INCREMENTAL
+      default: "false"
   workspaces:
     - name: source
   steps:
     - name: generate
       image: quay.io/karpenter/s2i
       script: |
-        s2i build $(workspaces.source.path)/$(params.CONTEXT_PATH) $(params.BASE_IMAGE) --image-scripts-url=image://$(params.BASE_IMAGE_S2I_SCRIPTS) --as-dockerfile /source-to-image/Dockerfile
+        s2i build $(workspaces.source.path)/$(params.CONTEXT_PATH) $(params.BASE_IMAGE) $(params.IMAGE) --incremental=$(params.INCREMENTAL) --image-scripts-url=image://$(params.BASE_IMAGE_S2I_SCRIPTS) --as-dockerfile /source-to-image/Dockerfile
       volumeMounts:
         - name: source-to-image
           mountPath: /source-to-image
