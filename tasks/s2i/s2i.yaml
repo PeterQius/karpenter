@@ -42,7 +42,7 @@ spec:
       image: quay.io/karpenter/buildah
       workingDir: $(workspaces.source.path)
       script: |
-        buildah push --tls-verify=$(params.TLS_VERIFY) $(params.IMAGE) docker://$(params.IMAGE)
+        buildah push --tls-verify=$(params.TLS_VERIFY) $(params.IMAGE)
       volumeMounts:
         - name: containers
           mountPath: /var/lib/containers
